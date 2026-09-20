@@ -1,0 +1,8 @@
+{
+  username = "yourname";
+
+  darwinHost = "MacBook";
+
+  gitName = "Your Name";
+  gitEmail = "you@example.com";
+}
