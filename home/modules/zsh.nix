@@ -15,6 +15,7 @@
     syntaxHighlighting.enable = true;
     initContent = ''
       ${builtins.readFile ../zsh/functions.zsh}
+      ${builtins.readFile ../pm/pm.zsh}
     '';
   };
 }

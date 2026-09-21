@@ -12,6 +12,7 @@ Personal macOS configuration managed with:
 * Home Manager configuration for the macOS user environment
 * Machine-specific settings stored in `.personal.nix`
 * Modular Neovim, Zsh, Git, and shell configuration
+* Lightweight fzf-based project manager for Zsh
 * Apple Silicon (`aarch64-darwin`) support
 
 ## License
@@ -36,6 +37,7 @@ The configuration files in this repository are available under the
 │   ├── ghostty/
 │   ├── modules/
 │   ├── nvim/
+│   ├── pm/
 │   └── zsh/
 ```
 
@@ -104,6 +106,48 @@ Apply changes:
 ```bash
 sudo darwin-rebuild switch --flake "path:$HOME/.config/nix#<darwinHost>"
 ```
+
+## Project Manager
+
+`pm` is a lightweight fzf-based project manager implemented as a Zsh
+function. Projects are explicitly added rather than discovered by scanning a
+directory, and they do not need to be Git repositories.
+
+```text
+pm [query]        Select and enter a project
+pm add [path]     Add the current or specified directory
+pm remove         Remove a project from the list
+pm list           List projects
+pm clean          Remove paths that no longer exist
+pm edit           Edit the project list with $EDITOR
+pm help           Show help
+```
+
+Examples:
+
+```zsh
+cd "$HOME/repo/example-project"
+pm add
+
+pm add "$HOME/repo/demo-app"
+pm add "$HOME/.config/example-config"
+pm demo
+```
+
+Selecting a project changes the working directory of the current shell. Press
+`Esc` to cancel without changing directories. Missing directories are omitted
+from the selector until they are removed with `pm clean`.
+
+The reusable function is stored in `home/pm/pm.zsh` and loaded by Home Manager.
+The private project list is created and maintained at runtime:
+
+```text
+${XDG_STATE_HOME:-$HOME/.local/state}/pm/projects
+```
+
+This state file contains local absolute paths. It is outside this repository,
+is not managed by Nix or Home Manager, and must not be added to the public Git
+repository. Project data stays on the local machine by default.
 
 ## Neovim
 
