@@ -79,6 +79,34 @@ background-image-repeat = false
 The main Ghostty configuration loads this optional file when it exists. Files
 under `.local/` are ignored by Git and must not be force-added.
 
+### Ghostty keyboard shortcuts
+
+Keyboard shortcuts are defined in the `# Keybinds` section of
+`home/ghostty/config.ghostty`:
+
+| Shortcut | Action |
+| --- | --- |
+| `Ctrl+Shift+C` | Copy to the clipboard |
+| `Ctrl+Shift+V` | Paste from the clipboard |
+| `Ctrl+Shift+R` | Reload the Ghostty configuration |
+| `Ctrl+Shift+N` | Open a new window |
+| `Ctrl+Shift+T` | Open a new tab |
+| `Ctrl+Shift+W` | Close the current terminal surface |
+| `Ctrl+Shift+Enter` | Create a split on the right |
+| `Ctrl+Shift+\` | Create a split below |
+
+Use `keybind = shortcut=action` to define a shortcut. Join modifier keys and
+the key with `+`, for example:
+
+```text
+keybind = ctrl+shift+t=new_tab
+keybind = ctrl+shift+enter=new_split:right
+keybind = ctrl+shift+backslash=new_split:down
+```
+
+After editing the configuration, press `Ctrl+Shift+R` to reload it. If you
+change the reload shortcut itself, restart Ghostty to apply the change.
+
 ## macOS
 
 Apply the macOS configuration:
