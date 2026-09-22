@@ -18,14 +18,55 @@ vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.opt.smartindent = true
-vim.opt.wrap = false
+vim.opt.wrap = true
+vim.opt.linebreak = true
+vim.opt.breakindent = true
+vim.opt.colorcolumn = "100"
 vim.opt.scrolloff = 5
 vim.opt.sidescrolloff = 5
 vim.opt.termguicolors = true
 vim.opt.cursorline = true
+vim.opt.cursorlineopt = "line,number"
 vim.opt.signcolumn = "yes"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
+
+local function set_editor_highlights()
+  -- 仅让主编辑区透出终端背景；浮窗与选区仍使用主题的正常背景。
+  for _, group in ipairs({ "Normal", "NormalNC", "SignColumn", "EndOfBuffer" }) do
+    local highlight = vim.api.nvim_get_hl(0, { name = group, link = false })
+    highlight.bg = "NONE"
+    vim.api.nvim_set_hl(0, group, highlight)
+  end
+
+  -- 不设置 CursorLine 背景，以便第 100 列参考线在当前行仍保持可见。
+  vim.api.nvim_set_hl(0, "CursorLine", { underline = true, sp = "#6f8197", bg = "NONE" })
+  vim.api.nvim_set_hl(0, "CursorLineNr", { bold = true, fg = "#89b4fa" })
+  vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#263449" })
+  vim.api.nvim_set_hl(0, "RenderMarkdownBullet", { fg = "#FAB387" })
+
+  vim.api.nvim_set_hl(0, "StatusLine", { bold = true, fg = "#c4ccd8", bg = "#1b2230" })
+  vim.api.nvim_set_hl(0, "StatusLineNC", { fg = "#8d9aae", bg = "#161d28" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineModeNormal", { bold = true, fg = "#c4ccd8", bg = "#263449" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineModeInsert", { bold = true, fg = "#c4ccd8", bg = "#2c4557" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineModeVisual", { bold = true, fg = "#c4ccd8", bg = "#463a54" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineModeReplace", { bold = true, fg = "#c4ccd8", bg = "#493f2e" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineModeCommand", { bold = true, fg = "#c4ccd8", bg = "#343b4a" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineModeOther", { bold = true, fg = "#c4ccd8", bg = "#343b4a" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineDevinfo", { fg = "#9aa7b8", bg = "#1b2230" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { bold = true, fg = "#c4ccd8", bg = "#1b2230" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineFileinfo", { fg = "#9aa7b8", bg = "#1b2230" })
+  vim.api.nvim_set_hl(0, "MiniStatuslineInactive", { fg = "#8d9aae", bg = "#161d28" })
+end
+
+set_editor_highlights()
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = vim.api.nvim_create_augroup("EditorHighlights", { clear = true }),
+  desc = "配色加载后恢复编辑器与 Markdown 高亮",
+  callback = function()
+    vim.schedule(set_editor_highlights)
+  end,
+})
 
 -- 搜索
 vim.opt.ignorecase = true
@@ -56,7 +97,24 @@ require("mini.pairs").setup()
 require("mini.comment").setup()
 require("mini.surround").setup()
 require("mini.statusline").setup({ use_icons = false })
+set_editor_highlights()
 require("mini.pick").setup()
+
+require("render-markdown").setup({
+  render_modes = { "n" },
+})
+set_editor_highlights()
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  desc = "Markdown 渲染开关",
+  callback = function(event)
+    map("n", "<leader>mr", "<cmd>RenderMarkdown buf_toggle<cr>", {
+      buffer = event.buf,
+      desc = "开关 Markdown 渲染",
+    })
+  end,
+})
 
 require("nvim-tree").setup({
   sync_root_with_cwd = true,

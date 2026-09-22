@@ -70,7 +70,7 @@ the image locally and create `.local/ghostty/config.ghostty`:
 
 ```text
 background-image = ~/.config/nix/.local/ghostty/backgrounds/background.png
-background-image-opacity = 0.10
+background-image-opacity = 0.2
 background-image-position = center
 background-image-fit = cover
 background-image-repeat = false
